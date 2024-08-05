@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Planner</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body class="light-mode">
+
+    <div class="container">
+        <div class="header">
+            <div id="date" class="data">
+            <h2></h2>
+            </div>
+            <button id="toggleMode">Dark Mode</button>
+        </div>
+        <div class="content">
+            <div class="left">
+                <div class="toDo">
+                    <h2>To-Do</h2>
+                    <div id="todoList">
+                        <div class="item">
+                            <input type="checkbox">
+                            <input type="text" placeholder="New Task">
+                        </div>
+                    </div>
+                    <button id="addTodoButton" disabled>Add Task</button>
+                </div>
+                <div id="highlights"></div>
+                <div id="rating"></div>
+            </div>
+            <div id="notes"></div>
+        </div>
+    </div>
+
+    <script>
+        loadComponent('components/todo.html', 'todo', 'css/todo.css');
+        loadComponent('components/highlights.html', 'highlights', 'css/highlights.css');
+        loadComponent('components/rating.html', 'rating', 'css/rating.css');
+        loadComponent('components/notes.html', 'notes', 'css/notes.css');
+
+        function setDate() {
+            const dateElement = document.querySelector('#date h2');
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.innerHTML = today.toLocaleDateString('pt-BR', options);
+        }
+
+        function addTodoItem() {
+            const todoList = document.getElementById('todoList');
+            const lastItem = todoList.lastElementChild;
+            const inputField = lastItem.querySelector('input[type="text"]');
+
+            const newItem = document.createElement('div');
+            newItem.classList.add('item');
+            newItem.innerHTML = `
+                <input type="checkbox">
+                <input type="text" placeholder="New Task">
+            `;
+            todoList.appendChild(newItem);
+            inputField.blur(); 
+            checkInputFields();
+        }
+
+        function checkInputFields() {
+            const inputFields = document.querySelectorAll('#todoList .item input[type="text"]');
+            const addButton = document.getElementById('addTodoButton');
+            const allFieldsFilled = Array.from(inputFields).every(input => input.value.trim() !== "");
+            addButton.disabled = !allFieldsFilled;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            setDate();
+
+            document.getElementById('toggleMode').addEventListener('click', function () {
+                const body = document.body;
+                if (body.classList.contains('light-mode')) {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                    this.textContent = 'Light Mode';
+                } else {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                    this.textContent = 'Dark Mode';
+                }
+            });
+
+            document.getElementById('addTodoButton').addEventListener('click', addTodoItem);
+
+            document.getElementById('todoList').addEventListener('input', checkInputFields);
+        });
+
+        function loadComponent(url, elementId, styleUrl) {
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById(elementId).innerHTML = data;
+                    if (styleUrl) {
+                        const link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        link.href = styleUrl;
+                        document.head.appendChild(link);
+                    }
+                });
+        }
+    </script>
+</body>
+
+</html>
