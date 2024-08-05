@@ -1,0 +1,11 @@
+.notes textarea {
+    width: 90%;
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    resize: none;
+    margin-bottom: 10px;
+}
